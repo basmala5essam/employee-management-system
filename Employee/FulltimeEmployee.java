@@ -13,7 +13,7 @@ public class FulltimeEmployee extends Employee {
         this.TotalSalary = calculateTotalSalary();
         
     }
-
+    
     public double getBonus() {
         return bonus;
     }
