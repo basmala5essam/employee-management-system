@@ -22,7 +22,17 @@ public class LoginFrame extends JFrame{
         
         //create Labels for the fields and the title
         usernameLabel = new JLabel(" Username ");
-        
+        passwordLabel = new JLabel(" Password ");
+        titleLabel = new JLabel(" Employee Management System ");
+
+        //create textfields
+        usernameField = new JTextField();
+        passwordField = new JPasswordField();
+
+        panel.setLayout(null); //absolute layout
+
+        titleLabel.
+
         this.setVisible(true);
 
         //
