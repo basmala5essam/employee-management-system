@@ -91,13 +91,15 @@ public class LoginFrame extends JFrame{
         @Override
         public void actionPerformed(ActionEvent e){
             String name = usernameField.getText();
-            String pass = passwordField.getText();
+            String pass = new String(passwordField.getPassword());
             
             if(e.getSource()==loginButton){
                 Login log = new Login();
                 String loginResult = log.login(name,pass);
                 if(loginResult.equals(SUCCESSFUL_LOGIN_MESSAGE)){
                     messageLabel.setText(SUCCESSFUL_LOGIN_MESSAGE);
+                    MainFrame mainFrame = new MainFrame();
+                    dispose();
                 }
                 else{
                     messageLabel.setText(FAILED_LOGIN_MESSAGE);
