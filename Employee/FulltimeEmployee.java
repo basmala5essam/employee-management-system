@@ -33,4 +33,7 @@ public class FulltimeEmployee extends Employee {
                 ", bonus=" + bonus +
                 '}';
     }
+
+    @Override
+    public String toCsvLine() {return "Full-time," + baseCsv() + "," + InitialSalary + "," + bonus;}
 }

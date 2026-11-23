@@ -1,6 +1,10 @@
 package SystemFeatures;
+import Employee.Employee;
 
 public class AddNewEmployee
 {
-    public boolean addEmp(int id, String firstname, String lastname, String )
+    public void addEmp(Employee e)
+    {
+        
+    }
 }

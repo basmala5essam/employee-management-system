@@ -37,4 +37,7 @@ public class ParttimeEmployee extends Employee {
                 ", hoursWorked=" + hoursWorked +
                 '}';
     }
+
+    @Override
+    public String toCsvLine() {return "Part-time," + baseCsv() + "," + hourlyRate + "," + hoursWorked;}
 }
