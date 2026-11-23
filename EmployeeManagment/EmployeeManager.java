@@ -31,5 +31,8 @@ public class EmployeeManager {
     public void save() {
         fileHandler.saveEmployees(employees);// used after an update
     }
+    public ArrayList<Employee> getEmployees(){
+        return new ArrayList<>(employees);
+    }
 }
 
