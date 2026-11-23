@@ -1,19 +1,43 @@
 package FileHandling;
-import java.io.File;
-import java.util.ArrayList;
 import Employee.*;
-public class EmployeeFileHandler {
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Scanner;
 
-    private static final String FILE_NAME = "employees.csv";
+
+public class EmployeeFileHandler 
+{
+
+    private static final String FILE_NAME = "employee.csv";   // file's relative path
     private final File file = new File(FILE_NAME);
 
-    /*note: for the csv file to be used, don't create it by hand.
-     saveEmployees creates it automatically the first time it runs, 
-     and loadEmployees just checks file.exists() and returns an empty list */
+    // helper function to 
     
-    public ArrayList<Employee> loadEmployees() {
-        //logic to read from the file and return an array list.
-        return new ArrayList<>();   
+    // read from file and return array list
+    public ArrayList<Employee> loadEmployees() 
+    {
+        ArrayList<Employee> employees = new ArrayList<>();
+        if (!file.exists()) return employees;
+
+        try (Scanner myReader = new Scanner(file)) 
+        {
+            while (myReader.hasNextLine()) 
+            {
+                String line = myReader.nextLine();
+                if (line.isBlank()) continue;
+                try 
+                {
+                    employees.add(parseLine(line));
+                }   catch (IllegalArgumentException | ArrayIndexOutOfBoundsException ex){}            
+            }
+        } 
+        catch (FileNotFoundException e) 
+        {
+            System.out.println("Cannot read from file");
+            e.printStackTrace();
+        }
+
+        return employees;   
     }
     /*NOTE: what loadEmployees does:
     loadEmployees(): file to objects:
