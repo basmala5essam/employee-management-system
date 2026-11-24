@@ -25,22 +25,40 @@ public abstract class Employee {
     public String getFullName() {
         return FullName;
     }
+    public void setFullName(String name){
+        this.FullName = name;
+    }
 
     public int getEmployeeID() {
         return EmployeeID;
+    }
+    public void setEmployeeID(int id){
+        EmployeeID = id;
     }
 
     public Department getDepartment() {
         return department;
     }
+    public void setDepartment(Department newDepartment){
+        department = newDepartment;
+    }
     public PositionType getPosition(){
         return position;
+    }
+    public void setPosition(PositionType newPosition){
+        position = newPosition;
     }
     public EmployeeType getEmployeeType(){
         return type;
     }
+    public void setEmployeeType(EmployeeType newType){
+        type = newType;
+    }
     public int getAge(){
         return age;
+    }
+    public void setAge(int newAge){
+        age = newAge;
     }
     public abstract double calculateTotalSalary();
 

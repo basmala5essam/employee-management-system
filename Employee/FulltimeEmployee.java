@@ -17,7 +17,15 @@ public class FulltimeEmployee extends Employee {
     public double getBonus() {
         return bonus;
     }
-
+    public void setBonus(double newBonus){
+        bonus = newBonus;
+    }
+    public double getInitialSalary(){
+        return InitialSalary;
+    }
+    public void setInitialSalary(double newInitialSalary){
+        InitialSalary = newInitialSalary;
+    }
     @Override
     public double calculateTotalSalary() {
         return InitialSalary + bonus;

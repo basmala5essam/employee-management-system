@@ -17,10 +17,16 @@ public class ParttimeEmployee extends Employee {
     public double getHourlyRate() {
         return hourlyRate;
     }
-
+    public void setHourlyRate(double newRate){
+        hourlyRate = newRate;
+    }
     public int getHoursWorked() {
         return hoursWorked;
     }
+    public void setHoursWorked(int newHours){
+        hoursWorked = newHours;
+    }
+    
 
     @Override
     public double calculateTotalSalary() {
