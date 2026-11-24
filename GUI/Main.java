@@ -5,5 +5,7 @@ public class Main {
         //AddNewEmployee addEmp = new AddNewEmployee();
        // LoginFrame logFrame = new LoginFrame();
        ViewEmployeeFrame view = new ViewEmployeeFrame();
+        AddNewEmployee addEmp = new AddNewEmployee();
+        //LoginFrame logFrame = new LoginFrame();
     }
 }

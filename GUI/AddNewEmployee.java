@@ -3,15 +3,15 @@ import java.awt.*;
 import javax.swing.*;
 
 public class AddNewEmployee extends JFrame {
-    private JLabel employeeIdLabel, fullnameLabel, ageLabel, departmentLabel, positionLabel, employeeTypeLabel, salaryLabel;
-    private JTextField employeeIdField, fullnameField, ageField, salaryField;
+    private JLabel employeeIdLabel, fullnameLabel, ageLabel, departmentLabel, positionLabel, employeeTypeLabel, initialSalaryLabel, bonusLabel, hoursLabel, hourlyRateLabel;
+    private JTextField employeeIdField, fullnameField, ageField, initialSalaryField, bonusField, hoursField, hourlyRateField;
     private JComboBox<String> departmentComboBox, positionComboBox, employeeTypeComboBox;
     private JButton addButton, cancelButton;
     private JPanel panel;
 
     public AddNewEmployee() {
         setTitle("Add New Employee");
-        setSize(600, 400);
+        setSize(600, 450);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
         this.setLocation(300,100);
@@ -24,19 +24,24 @@ public class AddNewEmployee extends JFrame {
         departmentLabel = new JLabel("Department:");
         positionLabel = new JLabel("Position:");
         employeeTypeLabel = new JLabel("Employee Type:");
-        salaryLabel = new JLabel("Salary:");
-
+        initialSalaryLabel = new JLabel("Basic Salary:");
+        bonusLabel = new JLabel("Bonus:");
+        hoursLabel = new JLabel("Total Hours Worked:");
+        hourlyRateLabel = new JLabel("Hourly Rate:");
 
         // Create text fields
         employeeIdField = new JTextField();
         fullnameField = new JTextField();
         ageField = new JTextField();
-        salaryField = new JTextField();
+        initialSalaryField = new JTextField();
+        bonusField = new JTextField();
+        hoursField = new JTextField();
+        hourlyRateField = new JTextField();
 
         // Create combo boxes
         departmentComboBox = new JComboBox<>(new String[]{"HR", "IT", "FINANCE", "MARKETING", "SALES"});
         positionComboBox = new JComboBox<>(new String[]{"INTERN", "JUNIOR", "SENIOR", "MANAGER", "DIRECTOR"});
-        employeeTypeComboBox = new JComboBox<>(new String[]{"FULL_TIME", "PART_TIME"});
+        employeeTypeComboBox = new JComboBox<>(new String[]{"FULL TIME", "PART TIME"});
 
         // Create buttons
         addButton = new JButton("Add");
@@ -57,44 +62,105 @@ public class AddNewEmployee extends JFrame {
         panel.add(positionComboBox);
         panel.add(employeeTypeLabel);
         panel.add(employeeTypeComboBox);
-        panel.add(salaryLabel);
-        panel.add(salaryField);
+        panel.add(initialSalaryLabel);
+        panel.add(initialSalaryField);
+        panel.add(bonusLabel);
+        panel.add(bonusField);
+        panel.add(hoursLabel);
+        panel.add(hoursField);
+        panel.add(hourlyRateLabel);
+        panel.add(hourlyRateField);
         panel.add(addButton);
         panel.add(cancelButton);
         panel.setBackground(Color.pink);
 
         // Set bounds for components
-        employeeIdLabel.setBounds(20, 20, 100, 25);
-        employeeIdField.setBounds(130, 20, 200, 25);
-        fullnameLabel.setBounds(20, 60, 100, 25);
-        fullnameField.setBounds(130, 60, 200, 25);
-        ageLabel.setBounds(20, 100, 100, 25);
-        ageField.setBounds(130, 100, 200, 25);
-        departmentLabel.setBounds(20, 140, 100, 25);
-        departmentComboBox.setBounds(130, 140, 200, 25);
-        positionLabel.setBounds(20, 180, 100, 25);
-        positionComboBox.setBounds(130, 180, 200, 25);
-        employeeTypeLabel.setBounds(20, 220, 100, 25);
-        employeeTypeComboBox.setBounds(130, 220, 200, 25);
-        salaryLabel.setBounds(20, 260, 100, 25);
-        salaryField.setBounds(130, 260, 200, 25);
-        addButton.setBounds(130, 300, 80, 25);
-        cancelButton.setBounds(220, 300, 80, 25);
+        employeeIdLabel.setBounds(125, 20, 150, 25);
+        employeeIdField.setBounds(275, 20, 200, 25);
+        fullnameLabel.setBounds(125, 60, 150, 25);
+        fullnameField.setBounds(275, 60, 200, 25);
+        ageLabel.setBounds(125, 100, 150, 25);
+        ageField.setBounds(275, 100, 200, 25);
+        departmentLabel.setBounds(125, 140, 150, 25);
+        departmentComboBox.setBounds(275, 140, 200, 25);
+        positionLabel.setBounds(125, 180, 150, 25);
+        positionComboBox.setBounds(275, 180, 200, 25);
+        employeeTypeLabel.setBounds(125, 220, 150, 25);
+        employeeTypeComboBox.setBounds(275, 220, 200, 25);
+        initialSalaryLabel.setBounds(125, 260, 150, 25);
+        initialSalaryField.setBounds(275, 260, 200, 25);
+        bonusLabel.setBounds(125, 300, 150, 25);
+        bonusField.setBounds(275, 300, 200, 25);
+        hoursLabel.setBounds(125, 260, 150, 25);
+        hoursField.setBounds(275, 260, 200, 25);
+        hourlyRateLabel.setBounds(125, 300, 150, 25);
+        hourlyRateField.setBounds(275, 300, 200, 25);
+        addButton.setBounds(180,370, 110, 25);
+        cancelButton.setBounds(300, 370, 110, 25);
 
         //set font for labels and buttons
         Font labelFont = new Font("Arial", Font.BOLD, 14);
+        Font buttonFont = new Font("Arial", Font.BOLD, 16);
+        Font fieldFont = new Font("Arial", Font.PLAIN, 14);
         employeeIdLabel.setFont(labelFont);
         fullnameLabel.setFont(labelFont);
         ageLabel.setFont(labelFont);
         departmentLabel.setFont(labelFont);
         positionLabel.setFont(labelFont);
         employeeTypeLabel.setFont(labelFont);
-        salaryLabel.setFont(labelFont);
-        addButton.setFont(labelFont);
-        cancelButton.setFont(labelFont);
+        initialSalaryLabel.setFont(labelFont);
+        bonusLabel.setFont(labelFont);
+        hoursLabel.setFont(labelFont);
+        hourlyRateLabel.setFont(labelFont);
+        addButton.setFont(buttonFont);
+        cancelButton.setFont(buttonFont);
+        employeeIdField.setFont(fieldFont);
+        fullnameField.setFont(fieldFont);
+        ageField.setFont(fieldFont);
+        departmentComboBox.setFont(fieldFont);
+        positionComboBox.setFont(fieldFont);
+        employeeTypeComboBox.setFont(fieldFont);
+        initialSalaryField.setFont(fieldFont);
+        bonusField.setFont(fieldFont);
+        hoursField.setFont(fieldFont);
+        hourlyRateField.setFont(fieldFont);
 
         this.add(panel);
         this.setVisible(true);
+
+        initialSalaryLabel.setVisible(true);
+        initialSalaryField.setVisible(true);
+        bonusLabel.setVisible(true);
+        bonusField.setVisible(true);
+        hoursLabel.setVisible(false);
+        hoursField.setVisible(false);
+        hourlyRateLabel.setVisible(false);
+        hourlyRateField.setVisible(false);
+
+        employeeTypeComboBox.addActionListener(e -> {
+            String selectedType = (String) employeeTypeComboBox.getSelectedItem();
+            if (selectedType.equals("FULL TIME")) {
+                initialSalaryLabel.setVisible(true);
+                initialSalaryField.setVisible(true);
+                bonusLabel.setVisible(true);
+                bonusField.setVisible(true);
+                hoursLabel.setVisible(false);
+                hoursField.setVisible(false);
+                hourlyRateLabel.setVisible(false);
+                hourlyRateField.setVisible(false);
+            } else if (selectedType.equals("PART TIME")) {
+                initialSalaryLabel.setVisible(false);
+                initialSalaryField.setVisible(false);
+                bonusLabel.setVisible(false);
+                bonusField.setVisible(false);
+                hoursLabel.setVisible(true);
+                hoursField.setVisible(true);
+                hourlyRateLabel.setVisible(true);
+                hourlyRateField.setVisible(true);
+            }
+        });
+
+        
 
     }
 
