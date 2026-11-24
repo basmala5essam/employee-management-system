@@ -1,5 +1,6 @@
 package Employee;
 import Department.Department;
+import enums.EmployeeType;
 import enums.PositionType;
 
 public class ParttimeEmployee extends Employee {
@@ -7,7 +8,7 @@ public class ParttimeEmployee extends Employee {
     private int hoursWorked;
 
     public ParttimeEmployee(String FullName, int EmployeeID, Department department, int age, PositionType position, double hourlyRate, int hoursWorked) {
-        super(FullName, EmployeeID, department, age, position, 0);
+        super(FullName, EmployeeID, department, age, position,EmployeeType.PART_TIME, 0);
         this.hourlyRate = hourlyRate;
         this.hoursWorked = hoursWorked;
         this.TotalSalary = calculateTotalSalary();

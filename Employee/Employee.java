@@ -1,5 +1,6 @@
 package Employee;
 import Department.Department;
+import enums.EmployeeType;
 import enums.PositionType;
 
 public abstract class Employee {
@@ -8,14 +9,16 @@ public abstract class Employee {
     protected Department department;
     protected int age;
     protected PositionType position;
+    protected EmployeeType type;
     protected double TotalSalary;
 
-    public Employee(String FullName, int EmployeeID, Department department, int age, PositionType position, double TotalSalary) {
+    public Employee(String FullName, int EmployeeID, Department department, int age, PositionType position,EmployeeType type, double TotalSalary) {
         this.FullName = FullName;
         this.EmployeeID = EmployeeID;
         this.department = department;
         this.age = age;
         this.position = position;
+        this.type = type;
         this.TotalSalary = TotalSalary;
     }
 
@@ -30,7 +33,15 @@ public abstract class Employee {
     public Department getDepartment() {
         return department;
     }
-
+    public PositionType getPosition(){
+        return position;
+    }
+    public EmployeeType getEmployeeType(){
+        return type;
+    }
+    public int getAge(){
+        return age;
+    }
     public abstract double calculateTotalSalary();
 
     @Override

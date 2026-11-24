@@ -1,13 +1,13 @@
 package Employee;
 import Department.Department;
-import enums.PositionType;
+import enums.*;
 
 public class FulltimeEmployee extends Employee {
     private double InitialSalary;
     private double bonus;
 
     public FulltimeEmployee(String FullName, int EmployeeID, Department department, int age, PositionType position, double InitialSalary, double bonus) {
-        super(FullName, EmployeeID, department, age, position, 0);
+        super(FullName, EmployeeID, department, age, position,EmployeeType.FULL_TIME, 0);
         this.InitialSalary = InitialSalary;
         this.bonus = bonus;
         this.TotalSalary = calculateTotalSalary();
