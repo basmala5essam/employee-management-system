@@ -1,8 +1,7 @@
 package EmployeeManagment;
-import java.util.ArrayList;
-import FileHandling.*;
-
 import Employee.*;
+import FileHandling.*;
+import java.util.ArrayList;
 public class EmployeeManager {
     private static EmployeeManager instance;
     private ArrayList<Employee> employees;
