@@ -1,0 +1,6 @@
+Full-time,1001,Ahmed Hassan,25,Department{departmentName='FINANCE', departmentID=1},JUNIOR,8000.0,1500.0
+Full-time,1002,Mariam Ali,30,Department{departmentName='HR', departmentID=2},MANAGER,15000.0,3000.0
+Full-time,1003,Omar Khaled,27,Department{departmentName='IT', departmentID=3},SENIOR,12000.0,2000.0
+Part-time,1004,Nour Mohamed,21,Department{departmentName='MARKETING', departmentID=4},JUNIOR,100.0,80
+Part-time,1005,Youssef Samir,23,Department{departmentName='IT', departmentID=3},SENIOR,150.0,60
+Part-time,1006,Laila Mostafa,22,Department{departmentName='FINANCE', departmentID=1},JUNIOR,120.0,50

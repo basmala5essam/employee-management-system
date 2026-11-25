@@ -5,10 +5,18 @@ import javax.swing.table.DefaultTableModel;
 import Department.Department;
 import Employee.*;
 import enums.DepartmentType;
+import enums.EmployeeType;
 import enums.PositionType;
+import DepartmentManager.DepartmentManager;
+import java.util.ArrayList;
+import EmployeeManagment.*;
 
+import SystemFeatures.*;
 import java.util.ArrayList;
 import java.awt.*;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class ViewEmployeeFrame extends JFrame {
     private JButton searchButton, showButton, deleteButton, updateButton;
@@ -19,6 +27,11 @@ public class ViewEmployeeFrame extends JFrame {
     private DefaultTableModel tableModel;
     private JPanel topPanel, centerPanel, bottomPanel;
     private JScrollPane tableScroll;
+    private EmployeeManager employeeManager = EmployeeManager.getInstance();
+    private DepartmentManager departmentManager = new DepartmentManager();
+    private ArrayList<Employee> employees = employeeManager.getEmployees();
+    private Listener listener = new Listener();
+
     public ViewEmployeeFrame(){
         this.setSize(800,650);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -99,21 +112,16 @@ public class ViewEmployeeFrame extends JFrame {
         tableScroll.setBounds(10, 10, 770, 380);
         centerPanel.add(tableScroll);
         
-        //testing with fake data
-        Department fakeDep1 = new Department(DepartmentType.FINANCE, 1);
-        Department fakeDep2 = new Department(DepartmentType.HR, 2);
-        Employee testEmployee1 = new FulltimeEmployee("Shery Ihab",10191,fakeDep1,19,PositionType.JUNIOR,1000,2000);
-        Employee testEmployee2 = new ParttimeEmployee("Shiko Ihab",1,fakeDep1,2,PositionType.MANAGER,100,10);
-        ArrayList<Employee> employees = new ArrayList<>();
-        employees.add(testEmployee1);
-        employees.add(testEmployee2);
-        refreshTable(employees);
 
         //set bounds and add components in bottom panel:
         deleteButton.setBounds(200,30,150,35);
         deleteButton.setFont(new Font("Arial",Font.BOLD,14));
         updateButton.setBounds(400,30,150,35);
         updateButton.setFont(new Font("Arial",Font.BOLD,14));
+        
+        refreshTable();
+        //adding actions:
+        updateButton.addActionListener(listener);
 
         bottomPanel.add(deleteButton);
         bottomPanel.add(updateButton);
@@ -122,7 +130,9 @@ public class ViewEmployeeFrame extends JFrame {
         add(bottomPanel);
         this.setVisible(true);
     }
-    public void refreshTable(ArrayList<Employee> employees) {
+    
+    private void refreshTable() {
+        employees = employeeManager.getEmployees();
         tableModel.setRowCount(0);   // clear
         for (Employee e : employees) {
             tableModel.addRow(new Object[]{
@@ -131,4 +141,205 @@ public class ViewEmployeeFrame extends JFrame {
             });
         }
     }
+    private void showUpdateDialogFulltime(Employee employee,int oldId) {
+        FulltimeEmployee fulltimeEmployee = (FulltimeEmployee) employee;
+        JPanel panel = new JPanel(new GridLayout(0, 2, 5, 10));
+        JTextField nameField = new JTextField(fulltimeEmployee.getFullName());
+        JTextField idField = new JTextField(String.valueOf(fulltimeEmployee.getEmployeeID()));
+        JTextField ageField = new JTextField(String.valueOf(fulltimeEmployee.getAge()));
+        JTextField initialSalaryField = new JTextField(String.valueOf(fulltimeEmployee.getInitialSalary()));
+        JTextField bonusField = new JTextField(String.valueOf(fulltimeEmployee.getBonus()));
+        JComboBox<DepartmentType> departmentBox = new JComboBox<>(DepartmentType.values());
+        JComboBox<PositionType> positionBox = new JComboBox<>(PositionType.values());
+        JComboBox<EmployeeType> employeeTypeBox = new JComboBox<>(EmployeeType.values());
+
+        departmentBox.setSelectedItem(fulltimeEmployee.getDepartment().getDepartmentName()); 
+        positionBox.setSelectedItem(fulltimeEmployee.getPosition());                         
+        employeeTypeBox.setSelectedItem(EmployeeType.FULL_TIME);                             
+        employeeTypeBox.addActionListener(new TypeListener(panel, nameField, idField, ageField,
+                departmentBox, positionBox, employeeTypeBox, EmployeeType.FULL_TIME, oldId)); 
+
+
+        panel.add(new JLabel("Full Name:"));
+        panel.add(nameField);
+
+        panel.add(new JLabel("Employee Type:"));
+        panel.add(employeeTypeBox);
+
+        panel.add(new JLabel("ID:"));
+        panel.add(idField);
+
+        panel.add(new JLabel("Age:"));
+        panel.add(ageField);
+
+        panel.add(new JLabel("Department:"));
+        panel.add(departmentBox);
+
+        panel.add(new JLabel("Position:"));
+        panel.add(positionBox);
+
+        panel.add(new JLabel("Initial Salary:"));
+        panel.add(initialSalaryField);
+
+        panel.add(new JLabel("Bonus:"));
+        panel.add(bonusField);
+
+        int result = JOptionPane.showConfirmDialog(
+            this,
+            panel,
+            "Update Employee",
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+            UpdateEmployee updateEmp = new UpdateEmployee();
+            int newId = Integer.parseInt(idField.getText());
+            String newFullName = nameField.getText();
+            
+            int newAge = Integer.parseInt(ageField.getText());
+            PositionType newPosition = (PositionType) positionBox.getSelectedItem();
+            double InitialSalary = Double.parseDouble(initialSalaryField.getText());
+            double bonus = Double.parseDouble(bonusField.getText());
+            Department newDepartment = departmentManager.findByName(((DepartmentType) departmentBox.getSelectedItem()).toString()); 
+            //validate before updating, and if all of these are valid, proceed with updating, otherwise have a popup
+            updateEmp.updateEmployee(oldId,EmployeeType.FULL_TIME,newId,newFullName,newDepartment,newAge,newPosition,InitialSalary,bonus);
+        }
+    }
+    private void showUpdateDialogParttime(Employee employee, int oldId) {
+        ParttimeEmployee parttimeEmployee = (ParttimeEmployee) employee;
+        JPanel panel = new JPanel(new GridLayout(0, 2, 5, 10));
+        JTextField nameField = new JTextField(parttimeEmployee.getFullName());
+        JTextField idField = new JTextField(String.valueOf(parttimeEmployee.getEmployeeID()));
+        JTextField ageField = new JTextField(String.valueOf(parttimeEmployee.getAge()));
+        JTextField hourlyRateField = new JTextField(String.valueOf(parttimeEmployee.getHourlyRate()));
+        JTextField hoursField = new JTextField(String.valueOf(parttimeEmployee.getHoursWorked()));
+        JComboBox<DepartmentType> departmentBox = new JComboBox<>(DepartmentType.values());
+        JComboBox<PositionType> positionBox = new JComboBox<>(PositionType.values());
+        JComboBox<EmployeeType> employeeTypeBox = new JComboBox<>(EmployeeType.values());
+
+        departmentBox.setSelectedItem(parttimeEmployee.getDepartment().getDepartmentName());
+        positionBox.setSelectedItem(parttimeEmployee.getPosition());
+        employeeTypeBox.setSelectedItem(EmployeeType.PART_TIME);
+        employeeTypeBox.addActionListener(new TypeListener(panel, nameField, idField, ageField,
+                departmentBox, positionBox, employeeTypeBox, EmployeeType.PART_TIME, oldId));
+
+        panel.add(new JLabel("Full Name:"));
+        panel.add(nameField);
+
+        panel.add(new JLabel("Employee Type:"));
+        panel.add(employeeTypeBox);
+
+        panel.add(new JLabel("ID:"));
+        panel.add(idField);
+
+        panel.add(new JLabel("Age:"));
+        panel.add(ageField);
+
+        panel.add(new JLabel("Department:"));
+        panel.add(departmentBox);
+
+        panel.add(new JLabel("Position:"));
+        panel.add(positionBox);
+
+        panel.add(new JLabel("Hourly Rate:"));
+        panel.add(hourlyRateField);
+
+        panel.add(new JLabel("Hours Worked:"));
+        panel.add(hoursField);
+
+        int result = JOptionPane.showConfirmDialog(
+            this, panel, "Update Employee",
+            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+            UpdateEmployee updateEmp = new UpdateEmployee();
+            int newId = Integer.parseInt(idField.getText());
+            String newFullName = nameField.getText();
+            Department newDepartment = departmentManager.findByName(((DepartmentType) departmentBox.getSelectedItem()).toString());
+            int newAge = Integer.parseInt(ageField.getText());
+            PositionType newPosition = (PositionType) positionBox.getSelectedItem();
+            double hourlyRate = Double.parseDouble(hourlyRateField.getText());
+            int hoursWorked = Integer.parseInt(hoursField.getText());
+
+            updateEmp.updateEmployee(oldId, EmployeeType.PART_TIME, newId, newFullName, newDepartment, newAge, newPosition, hourlyRate, hoursWorked);
+    }
+}
+    private class Listener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource() == updateButton) {
+                int selectedRow = infoTable.getSelectedRow();
+                if (selectedRow == -1) {
+                    JOptionPane.showMessageDialog(ViewEmployeeFrame.this,"Please select an employee first!");
+                    return;
+                }
+                int id = (int) tableModel.getValueAt(selectedRow, 0);
+                Employee selectedEmployee = null;
+                for (Employee emp : employees) {
+
+                    if (emp.getEmployeeID() == id) {
+                        selectedEmployee = emp;
+                        break;
+                    }
+                }
+                if (selectedEmployee instanceof FulltimeEmployee) {
+                    showUpdateDialogFulltime(selectedEmployee, selectedEmployee.getEmployeeID());
+                } else {
+                    showUpdateDialogParttime(selectedEmployee, selectedEmployee.getEmployeeID());
+                }
+                refreshTable();
+            }
+        }
+    }
+    private class TypeListener implements ActionListener {
+            private JPanel panel;
+            private JTextField nameField, idField, ageField;
+            private JComboBox<DepartmentType> departmentBox;
+            private JComboBox<PositionType> positionBox;
+            private JComboBox<EmployeeType> typeBox;
+            private EmployeeType currentType;
+            private int oldId;
+
+            TypeListener(JPanel panel, JTextField nameField, JTextField idField, JTextField ageField,
+                        JComboBox<DepartmentType> departmentBox, JComboBox<PositionType> positionBox,
+                        JComboBox<EmployeeType> typeBox, EmployeeType currentType, int oldId) {
+                this.panel = panel;
+                this.nameField = nameField;
+                this.idField = idField;
+                this.ageField = ageField;
+                this.departmentBox = departmentBox;
+                this.positionBox = positionBox;
+                this.typeBox = typeBox;
+                this.currentType = currentType;
+                this.oldId = oldId;
+            }
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                EmployeeType newType = (EmployeeType) typeBox.getSelectedItem();
+                if (newType == currentType) return;   // same type picked, do nothing
+
+                try {
+                    int id = Integer.parseInt(idField.getText());
+                    int age = Integer.parseInt(ageField.getText());
+                    Department dept = departmentManager.findByName(((DepartmentType) departmentBox.getSelectedItem()).toString());
+                    PositionType pos = (PositionType) positionBox.getSelectedItem();
+                    String name = nameField.getText();
+
+                    SwingUtilities.getWindowAncestor(panel).dispose();   // close current dialog
+
+                    if (newType == EmployeeType.PART_TIME) {
+                        showUpdateDialogParttime(new ParttimeEmployee(name, id, dept, age, pos, 0, 0), oldId);
+                    } else {
+                        showUpdateDialogFulltime(new FulltimeEmployee(name, id, dept, age, pos, 0, 0), oldId);
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(panel, "Please enter a valid ID and age first.");
+                    typeBox.setSelectedItem(currentType);
+                }
+            }
+        }
 }

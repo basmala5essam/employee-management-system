@@ -26,6 +26,12 @@ public class FulltimeEmployee extends Employee {
     public void setInitialSalary(double newInitialSalary){
         InitialSalary = newInitialSalary;
     }
+    public void setDepartment(Department department){
+        this.department = department;
+    }
+    public void refreshTotalSalary(){
+        TotalSalary = calculateTotalSalary();
+    }
     @Override
     public double calculateTotalSalary() {
         return InitialSalary + bonus;
