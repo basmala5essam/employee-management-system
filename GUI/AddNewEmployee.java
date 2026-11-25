@@ -6,7 +6,7 @@ import javax.swing.*;
 import Employee.*;
 import Department.*;
 import enums.*;
-import ValidateEmployee.ValidateEmployee;
+import ValidateEmployee.*;
 import EmployeeManagment.*;
 
 public class AddNewEmployee extends JFrame {

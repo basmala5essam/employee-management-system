@@ -14,6 +14,7 @@ public class UpdateEmployee {
         for(Employee e:employees){
             if(e.getEmployeeID()==oldId){
                 selectedEmployee = e;
+                break;
             }
         }
         if(selectedEmployee==null){
@@ -21,8 +22,8 @@ public class UpdateEmployee {
         }
         if(newType!=selectedEmployee.getEmployeeType()){
             FulltimeEmployee fullSelected = new FulltimeEmployee(newFullName, newId, newDepartment, newAge, newPosition, InitialSalary,bonus);
-            employees.remove(selectedEmployee);
-            employees.add(fullSelected);
+            manager.remove(selectedEmployee);
+            manager.add(fullSelected);
             return true;
         }
         else{
@@ -34,6 +35,7 @@ public class UpdateEmployee {
             fullSelected.setInitialSalary(InitialSalary);
             fullSelected.setBonus(bonus);
             fullSelected.setAge(newAge);
+            manager.save();
             return true;
         }
 
@@ -44,6 +46,7 @@ public class UpdateEmployee {
         for(Employee e:employees){
             if(e.getEmployeeID()==oldId){
                 selectedEmployee = e;
+                break;
             }
         }
         if(selectedEmployee==null){
@@ -51,8 +54,8 @@ public class UpdateEmployee {
         }
         if(newType!=selectedEmployee.getEmployeeType()){
             ParttimeEmployee partSelected = new ParttimeEmployee(newFullName, newId, newDepartment, newAge, newPosition, hourlyRate,hoursWorked);
-            employees.remove(selectedEmployee);
-            employees.add(partSelected);
+            manager.remove(selectedEmployee);
+            manager.add(partSelected);
             return true;
         }
         else{
@@ -64,6 +67,7 @@ public class UpdateEmployee {
             partSelected.setHourlyRate(hourlyRate);
             partSelected.setHoursWorked(hoursWorked);
             partSelected.setAge(newAge);
+            manager.save();
             return true;
         }
 

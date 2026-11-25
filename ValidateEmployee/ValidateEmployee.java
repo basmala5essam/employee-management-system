@@ -1,5 +1,4 @@
 package ValidateEmployee;
-
 import EmployeeManagment.EmployeeManager;
 import Employee.*;
 import java.util.ArrayList;
@@ -7,15 +6,15 @@ import java.util.ArrayList;
 public class ValidateEmployee {
 
     public static boolean validateEmployee(Employee employee) {
-        if(employee instanceof Employee.FulltimeEmployee){
-            Employee.FulltimeEmployee fulltimeEmployee = (Employee.FulltimeEmployee) employee;
+        if(employee instanceof FulltimeEmployee){
+            FulltimeEmployee fulltimeEmployee = (FulltimeEmployee) employee;
             return validateEmployeeID(fulltimeEmployee.getEmployeeID()) &&
                     validateName(fulltimeEmployee.getFullName()) &&
                     validateAge(fulltimeEmployee.getAge()) &&
                     validateNumericValue(fulltimeEmployee.getInitialSalary()) &&
                     validateNumericValue(fulltimeEmployee.getBonus());
-        } else if(employee instanceof Employee.ParttimeEmployee){
-            Employee.ParttimeEmployee parttimeEmployee = (Employee.ParttimeEmployee) employee;
+        } else if(employee instanceof ParttimeEmployee){
+            ParttimeEmployee parttimeEmployee = (ParttimeEmployee) employee;
             return validateEmployeeID(parttimeEmployee.getEmployeeID()) &&
                     validateName(parttimeEmployee.getFullName()) &&
                     validateAge(parttimeEmployee.getAge()) &&

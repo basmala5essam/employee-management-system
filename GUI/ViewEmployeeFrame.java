@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import EmployeeManagment.*;
 
 import SystemFeatures.*;
+import SystemFeatures.Search.*;
 import java.util.ArrayList;
 import java.awt.*;
 
@@ -19,7 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class ViewEmployeeFrame extends JFrame {
-    private JButton searchButton, showButton, deleteButton, updateButton;
+    private JButton searchButton, deleteButton, updateButton,addNewEmployeeButton;
     private JComboBox<String> departmentBox;
     private JLabel searchLabel,departmentLabel;
     private JTextField searchField;
@@ -31,6 +32,7 @@ public class ViewEmployeeFrame extends JFrame {
     private DepartmentManager departmentManager = new DepartmentManager();
     private ArrayList<Employee> employees = employeeManager.getEmployees();
     private Listener listener = new Listener();
+    private DepartmentFilterListener deptFilterListener = new DepartmentFilterListener();
 
     public ViewEmployeeFrame(){
         this.setSize(800,650);
@@ -56,9 +58,9 @@ public class ViewEmployeeFrame extends JFrame {
 
         //create buttons:
         searchButton = new JButton(" Search ");
-        showButton = new JButton(" Show ");
         deleteButton = new JButton(" Delete ");
         updateButton = new JButton(" Update ");
+        addNewEmployeeButton = new JButton(" Add New Employee ");
 
         //create department jcombobox 
         departmentBox = new JComboBox<>(new String[]{"All", "IT", "Human Resources", "Finance", "Marketing", "Sales"});
@@ -77,36 +79,32 @@ public class ViewEmployeeFrame extends JFrame {
         tableScroll = new JScrollPane(infoTable);
         
         //create JLabels:
-        searchLabel = new JLabel(" Search by ID or Name ");
+        searchLabel = new JLabel(" Search by ID ");
         departmentLabel = new JLabel(" Department ");
 
         //create search text field:
         searchField = new JTextField();
 
         // set bounds and add components in top panel:
-        searchLabel.setBounds(10,10,175,25);
+        searchLabel.setBounds(10,10,110,25);
         searchLabel.setFont(new Font("Arial",Font.BOLD,16));
 
-        searchField.setBounds(185,10,150,25);
+        searchField.setBounds(125,10,150,25);
         searchField.setFont(new Font("Arial",Font.BOLD,14));
 
-        searchButton.setBounds(185,55,100,25);
+        searchButton.setBounds(125,55,100,25);
 
         departmentLabel.setBounds(430,10,100,25);
         departmentLabel.setFont(new Font("Arial",Font.BOLD,16));
 
         departmentBox.setBounds(540,10,150,25);
         departmentBox.setFont(new Font("Arial",Font.BOLD,14));
-
-        showButton.setBounds(540,55,100,25);
-
     
         topPanel.add(searchLabel);
         topPanel.add(searchField);
         topPanel.add(searchButton);
         topPanel.add(departmentBox);
         topPanel.add(departmentLabel);
-        topPanel.add(showButton);
 
         //set bounds and add components in center panel:
         tableScroll.setBounds(10, 10, 770, 380);
@@ -114,32 +112,92 @@ public class ViewEmployeeFrame extends JFrame {
         
 
         //set bounds and add components in bottom panel:
-        deleteButton.setBounds(200,30,150,35);
+        deleteButton.setBounds(350,30,150,35);
         deleteButton.setFont(new Font("Arial",Font.BOLD,14));
-        updateButton.setBounds(400,30,150,35);
+        updateButton.setBounds(550,30,150,35);
         updateButton.setFont(new Font("Arial",Font.BOLD,14));
+        addNewEmployeeButton.setBounds(30,30,200,35);
         
         refreshTable();
         //adding actions:
         updateButton.addActionListener(listener);
-
+        departmentBox.addActionListener(deptFilterListener);
+        deleteButton.addActionListener(listener);
+        searchButton.addActionListener(listener);
         bottomPanel.add(deleteButton);
         bottomPanel.add(updateButton);
+        bottomPanel.add(addNewEmployeeButton);
+
         add(topPanel);
         add(centerPanel);
         add(bottomPanel);
         this.setVisible(true);
     }
-    
+    //used when all is selected
     private void refreshTable() {
         employees = employeeManager.getEmployees();
         tableModel.setRowCount(0);   // clear
         for (Employee e : employees) {
             tableModel.addRow(new Object[]{
-                e.getEmployeeID(), e.getFullName(), e.getAge(), e.getDepartment(),
+                e.getEmployeeID(), e.getFullName(), e.getAge(), e.getDepartment().getDepartmentName(),
                 e.getPosition(), e.getEmployeeType(), e.calculateTotalSalary()   // getSalary() is polymorphic
             });
         }
+    }
+    //used for department filtering
+    private void refreshTable(ArrayList<Employee> selectedEmployees) {
+        tableModel.setRowCount(0);   // clear
+        for (Employee e : selectedEmployees) {
+            tableModel.addRow(new Object[]{
+                e.getEmployeeID(), e.getFullName(), e.getAge(), e.getDepartment().getDepartmentName(),
+                e.getPosition(), e.getEmployeeType(), e.calculateTotalSalary()   // getSalary() is polymorphic
+            });
+        }
+    }
+    //used for searching by id
+    private void refreshTable(Employee e) {
+        tableModel.setRowCount(0); //clear
+        tableModel.addRow(new Object[]{e.getEmployeeID(), e.getFullName(), e.getAge(), e.getDepartment().getDepartmentName(),
+                e.getPosition(), e.getEmployeeType(), e.calculateTotalSalary()});
+        }
+    //used for searching by id + filtering by department
+    private void refreshTable(ArrayList<Employee> selectedEmployees,Employee e){
+        if(selectedEmployees.contains(e)){
+            refreshTable(e);
+        }
+        else{
+            tableModel.setRowCount(0); //clear as no intersection found
+        }
+
+    }
+    private ArrayList<Employee> filterByDepartment(){
+        String dept = (String) departmentBox.getSelectedItem();
+        Search searchByDept = new Search();
+        if(dept.equals("All")){
+            return employeeManager.getEmployees();
+        }
+        ArrayList<Employee> filtered;
+        //"All", "IT", "Human Resources", "Finance", "Marketing", "Sales"
+        switch(dept){
+            case "IT":
+                filtered = searchByDept.searchByDepartment(DepartmentType.IT.name());
+                break;
+            case "Human Resources":
+                filtered = searchByDept.searchByDepartment(DepartmentType.HR.name());
+                break;
+            case "Finance":
+                filtered = searchByDept.searchByDepartment(DepartmentType.FINANCE.name());
+                break;
+            case "Marketing":
+                filtered = searchByDept.searchByDepartment(DepartmentType.MARKETING.name());
+                break;
+            case "Sales":
+                filtered = searchByDept.searchByDepartment(DepartmentType.SALES.name());
+                break;
+            default:
+                return null;
+        }
+        return filtered;
     }
     private void showUpdateDialogFulltime(Employee employee,int oldId) {
         FulltimeEmployee fulltimeEmployee = (FulltimeEmployee) employee;
@@ -201,8 +259,7 @@ public class ViewEmployeeFrame extends JFrame {
             PositionType newPosition = (PositionType) positionBox.getSelectedItem();
             double InitialSalary = Double.parseDouble(initialSalaryField.getText());
             double bonus = Double.parseDouble(bonusField.getText());
-            Department newDepartment = departmentManager.findByName(((DepartmentType) departmentBox.getSelectedItem()).toString()); 
-            //validate before updating, and if all of these are valid, proceed with updating, otherwise have a popup
+            Department newDepartment = departmentManager.findByName(((DepartmentType) departmentBox.getSelectedItem()).name()); 
             updateEmp.updateEmployee(oldId,EmployeeType.FULL_TIME,newId,newFullName,newDepartment,newAge,newPosition,InitialSalary,bonus);
         }
     }
@@ -257,7 +314,7 @@ public class ViewEmployeeFrame extends JFrame {
             UpdateEmployee updateEmp = new UpdateEmployee();
             int newId = Integer.parseInt(idField.getText());
             String newFullName = nameField.getText();
-            Department newDepartment = departmentManager.findByName(((DepartmentType) departmentBox.getSelectedItem()).toString());
+            Department newDepartment = departmentManager.findByName(((DepartmentType) departmentBox.getSelectedItem()).name());
             int newAge = Integer.parseInt(ageField.getText());
             PositionType newPosition = (PositionType) positionBox.getSelectedItem();
             double hourlyRate = Double.parseDouble(hourlyRateField.getText());
@@ -270,7 +327,8 @@ public class ViewEmployeeFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (e.getSource() == updateButton) {
+            
+            if (e.getSource() == updateButton || e.getSource()==deleteButton) {
                 int selectedRow = infoTable.getSelectedRow();
                 if (selectedRow == -1) {
                     JOptionPane.showMessageDialog(ViewEmployeeFrame.this,"Please select an employee first!");
@@ -285,13 +343,37 @@ public class ViewEmployeeFrame extends JFrame {
                         break;
                     }
                 }
-                if (selectedEmployee instanceof FulltimeEmployee) {
-                    showUpdateDialogFulltime(selectedEmployee, selectedEmployee.getEmployeeID());
-                } else {
-                    showUpdateDialogParttime(selectedEmployee, selectedEmployee.getEmployeeID());
+                if(e.getSource()==updateButton){
+                    if (selectedEmployee instanceof FulltimeEmployee) {
+                        showUpdateDialogFulltime(selectedEmployee, selectedEmployee.getEmployeeID());
+                    } else {
+                        showUpdateDialogParttime(selectedEmployee, selectedEmployee.getEmployeeID());
+                    }
+                    refreshTable();
                 }
-                refreshTable();
+                if(e.getSource()==deleteButton){
+                    employeeManager.remove(selectedEmployee);
+                    refreshTable();
+                }
             }
+            if(e.getSource()==searchButton){
+                try{
+                    int idRequired = Integer.parseInt(searchField.getText().trim());
+                    Search searchId = new Search();
+                    String dept = (String) departmentBox.getSelectedItem();
+                    if(!dept.equals("All")){ //some department is selected
+                        refreshTable(filterByDepartment(),searchId.searchByID(idRequired));
+                    }
+                    else{
+                        refreshTable(searchId.searchByID(idRequired));
+                    }
+                    searchField.setText("");
+                }
+                catch(NumberFormatException ex){
+                    JOptionPane.showMessageDialog(ViewEmployeeFrame.this, "ID must be a number.");
+                }
+            }
+            
         }
     }
     private class TypeListener implements ActionListener {
@@ -325,7 +407,7 @@ public class ViewEmployeeFrame extends JFrame {
                 try {
                     int id = Integer.parseInt(idField.getText());
                     int age = Integer.parseInt(ageField.getText());
-                    Department dept = departmentManager.findByName(((DepartmentType) departmentBox.getSelectedItem()).toString());
+                    Department dept = departmentManager.findByName(((DepartmentType) departmentBox.getSelectedItem()).name());
                     PositionType pos = (PositionType) positionBox.getSelectedItem();
                     String name = nameField.getText();
 
@@ -342,4 +424,16 @@ public class ViewEmployeeFrame extends JFrame {
                 }
             }
         }
+        private class DepartmentFilterListener implements ActionListener{
+            @Override 
+            public void actionPerformed(ActionEvent e){
+                String dept = (String) departmentBox.getSelectedItem();
+                if(dept.equals("All")){
+                    refreshTable();
+                    return;
+                }
+                ArrayList<Employee> filtered = filterByDepartment();
+                refreshTable(filtered);
+            }
+}
 }

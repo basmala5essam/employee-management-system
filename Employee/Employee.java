@@ -70,6 +70,6 @@ public abstract class Employee {
                 ", department=" + department + ',' +
                 '}';
     }
-    protected String baseCsv() {return EmployeeID + "," + FullName + "," + age + "," + department + "," + position;}
+    protected String baseCsv() {return EmployeeID + "," + FullName + "," + age + "," + department.getDepartmentName() + "," + position;}
     public abstract String toCsvLine();
 }
