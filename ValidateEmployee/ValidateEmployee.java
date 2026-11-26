@@ -60,4 +60,25 @@ public class ValidateEmployee {
     private static boolean validateNumericValue(int numericValue) {
         return numericValue >= 0;
     }
+    public static boolean validateFulltimeUpdate(int oldId, int newId, String name, int age,double initialSalary, double bonus) {
+    return validateIDForUpdate(newId, oldId) &&
+           validateName(name) &&
+           validateAge(age) &&
+           validateNumericValue(initialSalary) &&
+           validateNumericValue(bonus);
+    }
+
+    public static boolean validateParttimeUpdate(int oldId, int newId, String name, int age, double hourlyRate, int hoursWorked) {
+        return validateIDForUpdate(newId, oldId) &&
+            validateName(name) &&
+            validateAge(age) &&
+            validateNumericValue(hourlyRate) &&
+            validateNumericValue(hoursWorked);
+    }
+
+    private static boolean validateIDForUpdate(int newId, int oldId) {
+        if (newId <= 0) return false;
+        if (newId == oldId) return true; // ID not changed, so not a duplicate
+        return validateEmployeeID(newId);  // changed, so it must be unique
+    }
 }

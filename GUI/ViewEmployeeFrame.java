@@ -16,11 +16,15 @@ import SystemFeatures.Search.*;
 import java.util.ArrayList;
 import java.awt.*;
 
+import ValidateEmployee.*;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class ViewEmployeeFrame extends JFrame {
-    private JButton searchButton, deleteButton, updateButton,addNewEmployeeButton;
+    private static ViewEmployeeFrame instance;
+
+    private JButton searchButton, deleteButton, updateButton,addNewEmployeeButton,logoutButton;
     private JComboBox<String> departmentBox;
     private JLabel searchLabel,departmentLabel;
     private JTextField searchField;
@@ -34,7 +38,12 @@ public class ViewEmployeeFrame extends JFrame {
     private Listener listener = new Listener();
     private DepartmentFilterListener deptFilterListener = new DepartmentFilterListener();
 
-    public ViewEmployeeFrame(){
+    public static ViewEmployeeFrame getInstance() {
+        if (instance == null) instance = new ViewEmployeeFrame();
+        return instance;
+    }
+
+    private ViewEmployeeFrame(){
         this.setSize(800,650);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
@@ -61,6 +70,7 @@ public class ViewEmployeeFrame extends JFrame {
         deleteButton = new JButton(" Delete ");
         updateButton = new JButton(" Update ");
         addNewEmployeeButton = new JButton(" Add New Employee ");
+        logoutButton = new JButton(" Log out ");
 
         //create department jcombobox 
         departmentBox = new JComboBox<>(new String[]{"All", "IT", "Human Resources", "Finance", "Marketing", "Sales"});
@@ -99,12 +109,18 @@ public class ViewEmployeeFrame extends JFrame {
 
         departmentBox.setBounds(540,10,150,25);
         departmentBox.setFont(new Font("Arial",Font.BOLD,14));
-    
+        
+        logoutButton.setBounds(540,45,100,30);
+        logoutButton.setFont(new Font("Arial",Font.BOLD,14));
+        logoutButton.setBackground(Color.red);
+        logoutButton.setForeground(Color.white);
+
         topPanel.add(searchLabel);
         topPanel.add(searchField);
         topPanel.add(searchButton);
         topPanel.add(departmentBox);
         topPanel.add(departmentLabel);
+        topPanel.add(logoutButton);
 
         //set bounds and add components in center panel:
         tableScroll.setBounds(10, 10, 770, 380);
@@ -124,6 +140,9 @@ public class ViewEmployeeFrame extends JFrame {
         departmentBox.addActionListener(deptFilterListener);
         deleteButton.addActionListener(listener);
         searchButton.addActionListener(listener);
+        addNewEmployeeButton.addActionListener(listener);
+        logoutButton.addActionListener(listener);
+
         bottomPanel.add(deleteButton);
         bottomPanel.add(updateButton);
         bottomPanel.add(addNewEmployeeButton);
@@ -251,16 +270,31 @@ public class ViewEmployeeFrame extends JFrame {
         );
 
         if (result == JOptionPane.OK_OPTION) {
-            UpdateEmployee updateEmp = new UpdateEmployee();
-            int newId = Integer.parseInt(idField.getText());
-            String newFullName = nameField.getText();
-            
-            int newAge = Integer.parseInt(ageField.getText());
-            PositionType newPosition = (PositionType) positionBox.getSelectedItem();
-            double InitialSalary = Double.parseDouble(initialSalaryField.getText());
-            double bonus = Double.parseDouble(bonusField.getText());
-            Department newDepartment = departmentManager.findByName(((DepartmentType) departmentBox.getSelectedItem()).name()); 
-            updateEmp.updateEmployee(oldId,EmployeeType.FULL_TIME,newId,newFullName,newDepartment,newAge,newPosition,InitialSalary,bonus);
+            if (nameField.getText().trim().isEmpty() || idField.getText().trim().isEmpty()
+            || ageField.getText().trim().isEmpty() || initialSalaryField.getText().trim().isEmpty()
+            || bonusField.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(ViewEmployeeFrame.this, "Please fill in all required fields.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            try{
+                UpdateEmployee updateEmp = new UpdateEmployee();
+                int newId = Integer.parseInt(idField.getText());
+                String newFullName = nameField.getText();
+                
+                int newAge = Integer.parseInt(ageField.getText());
+                PositionType newPosition = (PositionType) positionBox.getSelectedItem();
+                double InitialSalary = Double.parseDouble(initialSalaryField.getText());
+                double bonus = Double.parseDouble(bonusField.getText());
+                Department newDepartment = departmentManager.findByName(((DepartmentType) departmentBox.getSelectedItem()).name()); 
+                if (newDepartment == null
+                    || !ValidateEmployee.validateFulltimeUpdate(oldId, newId, newFullName, newAge, InitialSalary, bonus)) {
+                    JOptionPane.showMessageDialog(ViewEmployeeFrame.this, "Invalid employee data.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                updateEmp.updateEmployee(oldId,EmployeeType.FULL_TIME,newId,newFullName,newDepartment,newAge,newPosition,InitialSalary,bonus);
+            }catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(ViewEmployeeFrame.this, "ID, age, salary and bonus must be numbers.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
     private void showUpdateDialogParttime(Employee employee, int oldId) {
@@ -311,16 +345,30 @@ public class ViewEmployeeFrame extends JFrame {
         );
 
         if (result == JOptionPane.OK_OPTION) {
-            UpdateEmployee updateEmp = new UpdateEmployee();
-            int newId = Integer.parseInt(idField.getText());
-            String newFullName = nameField.getText();
-            Department newDepartment = departmentManager.findByName(((DepartmentType) departmentBox.getSelectedItem()).name());
-            int newAge = Integer.parseInt(ageField.getText());
-            PositionType newPosition = (PositionType) positionBox.getSelectedItem();
-            double hourlyRate = Double.parseDouble(hourlyRateField.getText());
-            int hoursWorked = Integer.parseInt(hoursField.getText());
-
-            updateEmp.updateEmployee(oldId, EmployeeType.PART_TIME, newId, newFullName, newDepartment, newAge, newPosition, hourlyRate, hoursWorked);
+            if (nameField.getText().trim().isEmpty() || idField.getText().trim().isEmpty()
+                    || ageField.getText().trim().isEmpty() || hourlyRateField.getText().trim().isEmpty()
+                    || hoursField.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(ViewEmployeeFrame.this, "Please fill in all required fields.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            try{
+                UpdateEmployee updateEmp = new UpdateEmployee();
+                int newId = Integer.parseInt(idField.getText());
+                String newFullName = nameField.getText();
+                Department newDepartment = departmentManager.findByName(((DepartmentType) departmentBox.getSelectedItem()).name());
+                int newAge = Integer.parseInt(ageField.getText());
+                PositionType newPosition = (PositionType) positionBox.getSelectedItem();
+                double hourlyRate = Double.parseDouble(hourlyRateField.getText());
+                int hoursWorked = Integer.parseInt(hoursField.getText());
+                if (newDepartment == null
+                        || !ValidateEmployee.validateParttimeUpdate(oldId, newId, newFullName, newAge, hourlyRate, hoursWorked)) {
+                    JOptionPane.showMessageDialog(ViewEmployeeFrame.this, "Invalid employee data.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                updateEmp.updateEmployee(oldId, EmployeeType.PART_TIME, newId, newFullName, newDepartment, newAge, newPosition, hourlyRate, hoursWorked);
+            }catch (NumberFormatException ex) { 
+                JOptionPane.showMessageDialog(ViewEmployeeFrame.this, "ID, age, hourly rate and hours must be numbers.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
     }
 }
     private class Listener implements ActionListener {
@@ -373,7 +421,13 @@ public class ViewEmployeeFrame extends JFrame {
                     JOptionPane.showMessageDialog(ViewEmployeeFrame.this, "ID must be a number.");
                 }
             }
-            
+            if(e.getSource()==addNewEmployeeButton){
+                AddNewEmployee.getInstance().showFrame();
+            }
+            if(e.getSource()==logoutButton){
+                LoginFrame.getInstance().showFrame();
+                dispose();
+            }
         }
     }
     private class TypeListener implements ActionListener {
@@ -435,5 +489,10 @@ public class ViewEmployeeFrame extends JFrame {
                 ArrayList<Employee> filtered = filterByDepartment();
                 refreshTable(filtered);
             }
+    }
+    public void showFrame() {
+        searchField.setText("");    
+        refreshTable();   // reload the table rows
+        setVisible(true);
 }
 }

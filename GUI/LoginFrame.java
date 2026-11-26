@@ -6,6 +6,8 @@ import SystemFeatures.*;
 
 
 public class LoginFrame extends JFrame{
+    private static LoginFrame instance;
+
     private final String SUCCESSFUL_LOGIN_MESSAGE = "Welcome!";
     private final String FAILED_LOGIN_MESSAGE = "Incorrect username or password, please try again";
 
@@ -16,7 +18,12 @@ public class LoginFrame extends JFrame{
     private JPanel panel;
     private Listener listener;
 
-    public LoginFrame(){
+    public static LoginFrame getInstance() {
+        if (instance == null) instance = new LoginFrame();
+        return instance;
+    }
+
+    private LoginFrame(){
         //settings
         this.setSize(600,400);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -98,7 +105,7 @@ public class LoginFrame extends JFrame{
                 String loginResult = log.login(name,pass);
                 if(loginResult.equals(SUCCESSFUL_LOGIN_MESSAGE)){
                     messageLabel.setText(SUCCESSFUL_LOGIN_MESSAGE);
-                    MainFrame mainFrame = new MainFrame();
+                    ViewEmployeeFrame.getInstance().showFrame();
                     dispose();
                 }
                 else{
@@ -109,5 +116,11 @@ public class LoginFrame extends JFrame{
                 dispose();
             }
         }
+    }
+    public void showFrame() {
+        usernameField.setText("");
+        passwordField.setText("");
+        messageLabel.setText("");
+        setVisible(true);
     }
 }

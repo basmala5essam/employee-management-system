@@ -8,22 +8,30 @@ import Department.*;
 import enums.*;
 import ValidateEmployee.*;
 import EmployeeManagment.*;
+import GUI.*;
 
 public class AddNewEmployee extends JFrame {
 
+    private static AddNewEmployee instance;
+
     private JLabel employeeIdLabel, fullnameLabel, ageLabel, departmentLabel, positionLabel, employeeTypeLabel, initialSalaryLabel, bonusLabel, hoursLabel, hourlyRateLabel;
     private JTextField employeeIdField, fullnameField, ageField, initialSalaryField, bonusField, hoursField, hourlyRateField;
-    private JComboBox<String> departmentComboBox, positionComboBox, employeeTypeComboBox;
+    private JComboBox<String> departmentComboBox, employeeTypeComboBox;
+    private JComboBox<PositionType> positionComboBox;
     private JButton addButton, cancelButton;
     private JPanel panel;
     private Listener listener;
 
-    public AddNewEmployee() {
+    public static AddNewEmployee getInstance() {
+        if (instance == null) instance = new AddNewEmployee();
+        return instance;
+    }
+    private AddNewEmployee() {
         setTitle("Add New Employee");
         setSize(600, 450);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
-        this.setLocation(300, 100);
+        this.setLocation(600, 100);
 
         // Create labels
         employeeIdLabel = new JLabel("Employee ID:");
@@ -48,7 +56,8 @@ public class AddNewEmployee extends JFrame {
 
         // Create combo boxes
         departmentComboBox = new JComboBox<>(new String[]{"HR", "IT", "FINANCE", "MARKETING", "SALES"});
-        positionComboBox = new JComboBox<>(new String[]{"INTERN", "JUNIOR", "SENIOR", "MANAGER", "DIRECTOR"});
+        //positionComboBox = new JComboBox<>(new String[]{"INTERN", "JUNIOR", "SENIOR", "MANAGER", "DIRECTOR"});
+        positionComboBox = new JComboBox<>(PositionType.values());
         employeeTypeComboBox = new JComboBox<>(new String[]{"FULL TIME", "PART TIME"});
 
         // Create buttons
@@ -185,44 +194,57 @@ public class AddNewEmployee extends JFrame {
                 String fullName = fullnameField.getText();
                 String age = ageField.getText();
                 String department = (String) departmentComboBox.getSelectedItem();
-                String position = (String) positionComboBox.getSelectedItem();
+                PositionType position = (PositionType) positionComboBox.getSelectedItem();
                 String employeeType = (String) employeeTypeComboBox.getSelectedItem();
                 String initialSalary = initialSalaryField.getText();
                 String bonus = bonusField.getText();
                 String hoursWorked = hoursField.getText();
                 String hourlyRate = hourlyRateField.getText();
-                if (employeeId.isEmpty() || fullName.isEmpty() || age.isEmpty() || department.isEmpty() || position.isEmpty() || employeeType.isEmpty()
+                Department d = null;
+                if (employeeId.isEmpty() || fullName.isEmpty() || age.isEmpty() || department.isEmpty() || position==null || employeeType.isEmpty()
                         || (employeeType.equals("FULL TIME") && (initialSalary.isEmpty() || bonus.isEmpty()))
                         || (employeeType.equals("PART TIME") && (hoursWorked.isEmpty() || hourlyRate.isEmpty()))) {
                     JOptionPane.showMessageDialog(AddNewEmployee.this, "Please fill in all required fields.", "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
                     if (department.equals("IT")) {
-                        Department d = IT.getinstance();
+                        d = IT.getInstance();
                     } else if (department.equals("HR")) {
-                        Department d = HR.getinstance();
+                        d = HR.getInstance();
                     } else if (department.equals("FINANCE")) {
-                        Department d = Finance.getinstance();
+                        d = Finance.getInstance();
                     } else if (department.equals("MARKETING")) {
-                        Department d = Marketing.getinstance();
+                        d = Marketing.getInstance();
                     } else if (department.equals("SALES")) {
-                        Department d = Sales.getinstance();
+                        d = Sales.getInstance();
                     }
-                    // Perform validation and processing of the input data here
-                    if (employeeType.equals("FULL TIME")) {
-                        // Handle full-time employee data
-                        FulltimeEmployee emp = new FulltimeEmployee(fullName, Integer.parseInt(employeeId), d, Integer.parseInt(age), position, Double.parseDouble(initialSalary), Double.parseDouble(bonus));
-                        // Perform validation and processing for full-time employee
-                        v = ValidateEmployee.validateEmployee(emp);
+                    //********** debugged hena ************ /
+                    //*********fixed the scope issues with v and emp. made the position being passed of type position type, not string */
+                    boolean v = false;
+                    Employee emp = null;
+                    try{
+                        // Perform validation and processing of the input data here
+                        if (d!=null && employeeType.equals("FULL TIME")) {
+                            // Handle full-time employee data
+                            emp = new FulltimeEmployee(fullName, Integer.parseInt(employeeId), d, Integer.parseInt(age), position, Double.parseDouble(initialSalary), Double.parseDouble(bonus));
+                            // Perform validation and processing for full-time employee
+                            v = ValidateEmployee.validateEmployee(emp);
 
-                    } else if (employeeType.equals("PART TIME")) {
-                        // Handle part-time employee data
-                        ParttimeEmployee emp = new ParttimeEmployee(fullName, Integer.parseInt(employeeId), d, Integer.parseInt(age), position, Integer.parseInt(hoursWorked), Double.parseDouble(hourlyRate));
-                        // Perform validation and processing for part-time employee
-                        v = ValidateEmployee.validateEmployee(emp);
+                        } else if (d!=null && employeeType.equals("PART TIME")) {
+                            // Handle part-time employee data
+                            //************debugged hena******/
+                            //*********wrong order of hourly rate and hours worked so problem with the data type being passed(double wont be narrowed to int and will cause error) ****/
+                        emp = new ParttimeEmployee(fullName, Integer.parseInt(employeeId), d, Integer.parseInt(age), position, Double.parseDouble(hourlyRate),Integer.parseInt(hoursWorked));
+                            // Perform validation and processing for part-time employee
+                            v = ValidateEmployee.validateEmployee(emp);
+                        }
+                    }catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(AddNewEmployee.this, "ID, age, salary, bonus, hours and rate must be numbers.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
                     if (v) {
                         EmployeeManager manager = EmployeeManager.getInstance();
-                        manager.add(v);
+                        manager.add(emp);
+                        clearFields();
                     }
                     else{
                         JOptionPane.showMessageDialog(AddNewEmployee.this, "Invalid employee data.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -232,12 +254,23 @@ public class AddNewEmployee extends JFrame {
 
                 // Perform validation and processing of the input data here
             } else if (e.getSource() == cancelButton) {
-                // Handle cancel button click
-                dispose(); // Close the window
-                ViewEmployeeFrame main = new ViewEmployeeFrame(this);
-                main.setVisible(true);
+                 ViewEmployeeFrame.getInstance().showFrame();  // refreshes the table, then shows it
+                setVisible(false);
             }
         }
+    }
+    private void clearFields() {
+        employeeIdField.setText("");
+        fullnameField.setText("");
+        ageField.setText("");
+        initialSalaryField.setText("");
+        bonusField.setText("");
+        hoursField.setText("");
+        hourlyRateField.setText("");
+    }
+    public void showFrame() {
+        clearFields();   // otherwise old input is still there
+        setVisible(true);
     }
 
 }

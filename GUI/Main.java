@@ -13,13 +13,8 @@ import enums.PositionType;
 public class Main {
     public static void main(String args[]){
         //AddNewEmployee addEmp = new AddNewEmployee();
-       // LoginFrame logFrame = new LoginFrame();
+        LoginFrame.getInstance().showFrame();
       //EmployeeManager.getInstance().addFakeEmployees();
-       ViewEmployeeFrame view = new ViewEmployeeFrame();
-       // AddNewEmployee addEmp = new AddNewEmployee();
-       // LoginFrame logFrame = new LoginFrame();
-       //ViewEmployeeFrame view = new ViewEmployeeFrame();
-        //AddNewEmployee addEmp = new AddNewEmployee();
-        //LoginFrame logFrame = new LoginFrame();
+       
 }
 }
